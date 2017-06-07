@@ -1,5 +1,12 @@
 package com.zipcode.util;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**Write a ZIPEnumerator utility that searches a directory (specified in the constructor)
  and all subdirectories for zip files.
  Provide a function that returns a list Path objects to all zip files found
@@ -11,10 +18,32 @@ package com.zipcode.util;
 public class ZIPEnumerator {
 
     private String directory;
+    private boolean listJarFilesAlso;
 
-    public ZIPEnumerator(String directory){
+    public ZIPEnumerator(String directory, boolean listJarFilesAlso){
         this.directory = directory;
     }
+
+    public  boolean filterFile(Path path){
+        if (listJarFilesAlso){
+           return  path.endsWith(".zip") || path.endsWith(".jar");
+        }
+       return  path.endsWith("zip");
+    }
+    public List<Path> getPath() throws IOException {
+        if (listJarFilesAlso){
+            return  Files.walk(Paths.get(directory))
+                    .filter( (path -> ( (path.endsWith(".zip") || (path.endsWith(".jar")) ) )))
+                    .collect(Collectors.toList());
+
+        }else{
+            return  Files.walk(Paths.get(directory))
+                    .filter( path -> ( path.endsWith(".zip")  ))
+                    .collect(Collectors.toList());
+        }
+    }
+
+
 
 
 }
